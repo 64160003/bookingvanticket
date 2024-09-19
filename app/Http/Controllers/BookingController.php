@@ -7,7 +7,10 @@ use App\Models\RouteUp;
 use App\Models\RouteDown;
 use App\Models\ScheduleHasRoute;
 use App\Models\Schedule;
+use Illuminate\Support\Facades\Auth;
+use App\Models\BookingModel;  // Add this line
 use Illuminate\Support\Facades\Log;
+
 
 class BookingController extends Controller
 {
@@ -114,12 +117,9 @@ class BookingController extends Controller
 
     public function showSummary(Request $request)
     {
-        Log::info('showSummary method called with schedule_id:', ['schedule_id' => $request->input('schedule_id')]);
+        Log::info('showSummary method called with data:', $request->all());
     
         try {
-            // Log all incoming request data
-            Log::info('Received data in showSummary:', $request->all());
-            
             $validatedData = $request->validate([
                 'customer_name' => 'required|string|max:255',
                 'phone' => 'required|string|max:15',
@@ -133,47 +133,79 @@ class BookingController extends Controller
     
             Log::info('Validation successful:', $validatedData);
     
-            $origin = RouteUp::find($validatedData['origin_id']);
-            $destination = RouteDown::find($validatedData['destination_id']);
-            $schedule = Schedule::find($validatedData['schedule_id']);
+            $origin = RouteUp::findOrFail($validatedData['origin_id']);
+            $destination = RouteDown::findOrFail($validatedData['destination_id']);
+            $schedule = Schedule::findOrFail($validatedData['schedule_id']);
             $seats = $validatedData['seats'];
-            $totalPrice = floatval($destination->Price) * intval($seats);  // Calculate total price
+            $totalPrice = $validatedData['total_price'];
     
-            Log::info('Origin:', ['origin' => $origin]);
-            Log::info('Destination:', ['destination' => $destination]);
-            Log::info('Schedule:', ['schedule' => $schedule]);
-
-            // Determine if the QR code should be displayed
             $showQrCode = $validatedData['payment_method'] === 'online_qr';
     
-            return view('summary', compact('validatedData', 'origin', 'destination', 'schedule', 'seats', 'totalPrice', 'showQrCode'));
+            // Determine the system based on login status
+            $system = Auth::check() ? 'store' : 'online';
     
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation error:', $e->errors());
-            return redirect()->back()->withErrors($e->errors())->withInput();
+            // If payment method is cash, save the booking immediately
+            if ($validatedData['payment_method'] === 'cash') {
+                $booking = new BookingModel;
+                $booking->Seat = $seats;
+                $booking->Name = $validatedData['customer_name'];
+                $booking->Phone = $validatedData['phone'];
+                $booking->System = $system;
+                $booking->save();
+    
+                Log::info('Cash booking saved successfully:', $booking->toArray());
+    
+                return view('summary', compact('validatedData', 'origin', 'destination', 'schedule', 'seats', 'totalPrice', 'showQrCode', 'booking', 'system'));
+            }
+    
+            return view('summary', compact('validatedData', 'origin', 'destination', 'schedule', 'seats', 'totalPrice', 'showQrCode', 'system'));
+    
         } catch (\Exception $e) {
-            Log::error('General error in showSummary:', ['error' => $e->getMessage()]);
+            Log::error('Error in showSummary:', ['error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'An error occurred. Please try again.');
         }
     }
-
-    public function uploadSlip(Request $request){
-    $request->validate([
-        'payment_slip' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-    ]);
-
-    // Handle file upload
-    if ($request->hasFile('payment_slip')) {
-        $file = $request->file('payment_slip');
-        $filename = time() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('uploads'), $filename);
-
-        // Here, you can save the file path to the database if needed
-        // e.g., $paymentSlip->file_path = 'uploads/' . $filename;
-
-        return redirect()->back()->with('success', 'Payment slip uploaded successfully!');
+    public function uploadSlip(Request $request)
+    {
+        Log::info('uploadSlip method called with data:', $request->all());
+    
+        $request->validate([
+            'payment_slip' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'seats' => 'required|integer',
+            'customer_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:15',
+        ]);
+    
+        try {
+            if ($request->hasFile('payment_slip')) {
+                $file = $request->file('payment_slip');
+                $filename = time() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads'), $filename);
+    
+                $system = Auth::check() ? 'store' : 'online';
+    
+                $booking = new BookingModel;
+                $booking->Seat = $request->seats;
+                $booking->Name = $request->customer_name;
+                $booking->Phone = $request->phone;
+                $booking->System = $system;
+                $booking->save();
+    
+                Log::info('Booking saved successfully:', $booking->toArray());
+    
+                return redirect()->route('booking.confirmation', ['id' => $booking->BookingID])->with('success', 'Booking completed successfully!');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error in uploadSlip:', ['error' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'Failed to process booking. Please try again.');
+        }
+    
+        return redirect()->back()->with('error', 'Failed to upload payment slip.');
     }
 
-    return redirect()->back()->with('error', 'Failed to upload payment slip.');
+    public function showConfirmation($id)
+{
+    $booking = BookingModel::findOrFail($id);
+    return view('confirmation', compact('booking'));
 }
 }

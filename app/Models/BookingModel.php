@@ -10,6 +10,15 @@ class BookingModel extends Model
 
     protected $table = 'booking';
 
+    // If your primary key is named something other than 'id', specify it here
+    protected $primaryKey = 'BookingID'; // Replace 'BookingID' with your actual primary key name
+
+    // If your primary key is not an auto-incrementing integer, set this to false
+    public $incrementing = true;
+
+    // If your primary key is not an integer, specify its type
+    protected $keyType = 'int';
+
     protected $fillable = [
         'Seat',
         'Name',
@@ -17,7 +26,6 @@ class BookingModel extends Model
         'System',
     ];
 
-    // Do not cast BookingID if it's an auto-incrementing field
+    // If you're not using created_at and updated_at columns
+    public $timestamps = true;
 }
-
-

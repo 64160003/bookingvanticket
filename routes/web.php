@@ -42,7 +42,7 @@ Route::post('/booking/summary', [BookingController::class, 'showSummary'])->name
 Route::get('/customer', [BookingController::class, 'showCustomerForm'])->name('customer');
 
 //Upload Slip
-Route::post('/upload-slip', [BookingController::class, 'uploadSlip'])->name('upload.slip');
+Route::post('/booking/upload-slip', [BookingController::class, 'uploadSlip'])->name('booking.uploadSlip');
 
 
 Route::get('/dashboard', function () {
@@ -61,5 +61,8 @@ Route::fallback(function () {
 });
 
 require __DIR__.'/auth.php';
+
+//booking confirmation
+Route::get('/booking/confirmation/{id}', [BookingController::class, 'showConfirmation'])->name('booking.confirmation');
 
 

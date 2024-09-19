@@ -10,7 +10,6 @@ class CreatePaymentTable extends Migration
         Schema::create('payment', function (Blueprint $table) {
             $table->id('PaymentID');
             $table->string('PaymentMethod', 45);
-            $table->string('PaymentDate', 45);
             $table->decimal('Amount', 10, 2);
             $table->unsignedBigInteger('BookingID');
             $table->tinyInteger('PaymentStatus');

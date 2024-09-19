@@ -38,6 +38,7 @@
                     <input type="hidden" name="seats" value="{{ $seats }}">
                     <input type="hidden" name="customer_name" value="{{ $validatedData['customer_name'] }}">
                     <input type="hidden" name="phone" value="{{ $validatedData['phone'] }}">
+                    <input type="hidden" name="total_price" value="{{ $totalPrice }}">
                     <br><br>
                     <!-- Image preview section -->
                     <div id="image-preview-container" style="display: none;">

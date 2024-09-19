@@ -8,12 +8,20 @@ use App\Models\RouteDown;
 use App\Models\ScheduleHasRoute;
 use App\Models\Schedule;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\PaymentController; //add
 use App\Models\BookingModel;  // Add this line
 use Illuminate\Support\Facades\Log;
 
 
 class BookingController extends Controller
 {
+    protected $paymentController;
+
+    public function __construct(PaymentController $paymentController)
+    {
+        $this->paymentController = $paymentController;
+    }
+
     public function showBookingForm(Request $request)
     {
         $scheduleId = $request->input('schedule_id'); // or $request->route('scheduleId') for route parameter
@@ -153,14 +161,21 @@ class BookingController extends Controller
                 $booking->System = $system;
                 $booking->save();
     
-                Log::info('Cash booking saved successfully:', $booking->toArray());
-    
-                return view('summary', compact('validatedData', 'origin', 'destination', 'schedule', 'seats', 'totalPrice', 'showQrCode', 'booking', 'system'));
+            // Create payment record
+            try {
+                $payment = $this->paymentController->createPayment($booking->BookingID, 'Cash', $totalPrice);
+            } catch (\Exception $e) {
+                Log::error('Failed to create payment record:', ['error' => $e->getMessage()]);
+                return redirect()->back()->with('error', 'An error occurred while processing your payment. Please try again.');
             }
-    
+
+            Log::info('Cash booking and payment saved successfully:', ['booking' => $booking->toArray(), 'payment' => $payment->toArray()]);
+
+            return view('summary', compact('validatedData', 'origin', 'destination', 'schedule', 'seats', 'totalPrice', 'showQrCode', 'booking', 'system', 'payment'));
+            }
+
             return view('summary', compact('validatedData', 'origin', 'destination', 'schedule', 'seats', 'totalPrice', 'showQrCode', 'system'));
-    
-        } catch (\Exception $e) {
+        }catch (\Exception $e) {
             Log::error('Error in showSummary:', ['error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'An error occurred. Please try again.');
         }
@@ -191,15 +206,18 @@ class BookingController extends Controller
                 $booking->System = $system;
                 $booking->save();
     
-                Log::info('Booking saved successfully:', $booking->toArray());
-    
+                // Create payment record
+                $payment = $this->paymentController->createPayment($booking->BookingID, 'Online QR Code', $request->total_price);
+
+                Log::info('Booking and payment saved successfully:', ['booking' => $booking->toArray(), 'payment' => $payment->toArray()]);
+
                 return redirect()->route('booking.confirmation', ['id' => $booking->BookingID])->with('success', 'Booking completed successfully!');
             }
         } catch (\Exception $e) {
             Log::error('Error in uploadSlip:', ['error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'Failed to process booking. Please try again.');
         }
-    
+
         return redirect()->back()->with('error', 'Failed to upload payment slip.');
     }
 

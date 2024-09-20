@@ -9,6 +9,7 @@ use App\Models\ScheduleHasRoute;
 use App\Models\Schedule;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PaymentController; //add
+use App\Models\PaymentModel;
 use App\Models\BookingModel;  // Add this line
 use Illuminate\Support\Facades\Log;
 
@@ -159,6 +160,14 @@ class BookingController extends Controller
                 $booking->Name = $validatedData['customer_name'];
                 $booking->Phone = $validatedData['phone'];
                 $booking->System = $system;
+                $booking->notes = json_encode([
+                    'origin_id' => $validatedData['origin_id'],
+                    'destination_id' => $validatedData['destination_id']
+                ]);
+                // Then, in the search method, you would retrieve the IDs like this:
+                $bookingDetails = json_decode($booking->notes, true);
+                $originId = $bookingDetails['origin_id'] ?? null;
+                $destinationId = $bookingDetails['destination_id'] ?? null;
                 $booking->save();
     
             // Create payment record
@@ -204,6 +213,7 @@ class BookingController extends Controller
                 $booking->Name = $request->customer_name;
                 $booking->Phone = $request->phone;
                 $booking->System = $system;
+                $booking->ScheduleID = $request->schedule_id; // Add this line
                 $booking->save();
     
                 // Create payment record
@@ -225,5 +235,39 @@ class BookingController extends Controller
 {
     $booking = BookingModel::findOrFail($id);
     return view('confirmation', compact('booking'));
+}
+
+public function search(Request $request)
+{
+    $phone = $request->input('search');
+
+    if ($phone) {
+        $bookings = BookingModel::where('Phone', 'like', '%' . $phone . '%')->get();
+
+        $results = [];
+        foreach ($bookings as $booking) {
+            $payment = PaymentModel::where('BookingID', $booking->BookingID)->first();
+            
+            // Assuming you store origin_id and destination_id in the payment details or booking notes
+            $originId = $payment ? $payment->origin_id : null;
+            $destinationId = $payment ? $payment->destination_id : null;
+            
+            $origin = $originId ? RouteUp::find($originId) : null;
+            $destination = $destinationId ? RouteDown::find($destinationId) : null;
+
+            $results[] = [
+                'Phone' => $booking->Phone,
+                'Name' => $booking->Name,
+                'Origin' => $origin ? $origin->Origin : 'N/A',
+                'Destination' => $destination ? $destination->Destination : 'N/A',
+                'Amount' => $payment ? $payment->Amount : 'N/A',
+                'PaymentStatus' => $payment ? ($payment->PaymentStatus ? 'Paid' : 'Pending') : 'N/A',
+            ];
+        }
+
+        return view('search', ['results' => $results, 'searchTerm' => $phone]);
+    }
+
+    return view('search');
 }
 }

@@ -15,9 +15,7 @@ Route::get('about', function () {
 })->name('about');
 
 // Route for the search page
-Route::get('search', function () {
-    return view('search');
-})->name('search');
+Route::get('/search', [BookingController::class, 'search'])->name('search');
 
 // Route for fetching destinations based on selected origin (routeUpID)
 Route::get('/fetch-destinations/{routeUpID}', [BookingController::class, 'fetchDestinations'])->name('booking.fetchDestinations');

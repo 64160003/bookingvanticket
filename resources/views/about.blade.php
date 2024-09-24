@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('layouts/layout')
 @section('title','เกี่ยวกับ')
 @section('content')
 <head>

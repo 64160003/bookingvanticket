@@ -20,5 +20,6 @@ class ScheduleController extends Controller
         // Pass the schedules data to the view
         $currentDate = Carbon::now()->format('d F Y'); // Get current date in desired format
         return view('welcome', compact('schedules', 'currentDate'));
-    }
+    }    
+
 }

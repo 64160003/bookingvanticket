@@ -48,10 +48,12 @@ Route::get('/customer', [BookingController::class, 'showCustomerForm'])->name('c
 //Upload Slip
 Route::post('/booking/upload-slip', [BookingController::class, 'uploadSlip'])->name('booking.uploadSlip');
 
+// Dashboard Admin route with ScheduleController
+Route::get('/dashboard', [ScheduleController::class, 'dashboard'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+// Route::get('/dashboard', [ScheduleController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

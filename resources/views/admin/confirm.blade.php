@@ -9,22 +9,25 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="text-center">
-                        {{ $status == 0 ? 'Waiting for Confirmation' : 'Confirmed Payments' }}
+                        Payment Management
                     </h3>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-center mb-4 border">
-                        <a href="{{ route('admin.confirmation', ['status' => 0]) }}" class="btn btn-primary {{ $status == 0 ? 'active' : '' }} mr-2">
+                    <div class="status-buttons">
+                        <a href="{{ route('admin.confirmation', ['status' => 0]) }}" class="status-btn status-btn-waiting {{ $status == 0 ? 'active' : '' }}">
                             Waiting for Confirmation
                         </a>
-                        <a href="{{ route('admin.confirmation', ['status' => 1]) }}" class="btn btn-success {{ $status == 1 ? 'active' : '' }}">
+                        <a href="{{ route('admin.confirmation', ['status' => 1]) }}" class="status-btn status-btn-confirmed {{ $status == 1 ? 'active' : '' }}">
                             Confirmed
+                        </a>
+                        <a href="{{ route('admin.confirmation', ['status' => 2]) }}" class="status-btn status-btn-notapproved {{ $status == 2 ? 'active' : '' }}">
+                            Not approved
                         </a>
                     </div>
 
-                    <div class="row justify-content-center">
+                    <div class="row">
                         @forelse($payments as $payment)
-                            <div class="col-md-4 mb-4">
+                            <div class="col-md-6 col-lg-4 mb-4">
                                 <a href="{{ route('admin.payment.detail', ['paymentId' => $payment->PaymentID]) }}" class="text-decoration-none">
                                     <div class="card payment-card">
                                         <div class="card-body">
@@ -49,19 +52,4 @@
         </div>
     </div>
 </div>
-@endsection
-
-@section('styles')
-<style>
-.payment-card {
-    transition: all 0.3s ease;
-}
-.payment-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-.card-body {
-    background-color: aliceblue;
-}
-</style>
 @endsection

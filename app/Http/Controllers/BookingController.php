@@ -166,7 +166,7 @@ class BookingController extends Controller
     }
 }
 
-    public function uploadSlip(Request $request)
+public function uploadSlip(Request $request)
 {
     Log::info('uploadSlip method called with data:', $request->all());
 
@@ -179,20 +179,28 @@ class BookingController extends Controller
     try {
         if ($request->hasFile('payment_slip')) {
             $file = $request->file('payment_slip');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
+
+            // Generate a unique filename with the original extension
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            
+            // Optionally, sanitize the filename
+            $filename = preg_replace('/[^A-Za-z0-9\-\_\.]/', '', $filename);
+
+            // Move the file to the 'uploads' directory
             $file->move(public_path('uploads'), $filename);
 
+            // Find the associated booking
             $booking = BookingModel::findOrFail($request->booking_id);
-            
-            // Update the booking status if needed
-            // $booking->status = 'paid';
-            // $booking->save();
 
+            // Create a new payment record with the filename
             $payment = $this->paymentController->createPayment($booking->BookingID, 'Online QR Code', $request->total_price);
+            $payment->payment_slip = $filename; // Store in 'payment_slip' field
+            $payment->save();
 
-            Log::info('Payment saved successfully:', ['payment' => $payment->toArray()]);
+            Log::info('Payment saved successfully with slip filename:', ['payment' => $payment->toArray()]);
 
-            return redirect()->route('booking.confirmation', ['id' => $booking->BookingID])->with('success', 'Payment completed successfully!');
+            return redirect()->route('booking.confirmation', ['id' => $booking->BookingID])
+                ->with('success', 'Payment completed successfully!');
         }
     } catch (\Exception $e) {
         Log::error('Error in uploadSlip:', ['error' => $e->getMessage()]);
@@ -201,6 +209,8 @@ class BookingController extends Controller
 
     return redirect()->back()->with('error', 'Failed to upload payment slip.');
 }
+
+
 
     public function showConfirmation($id)
     {

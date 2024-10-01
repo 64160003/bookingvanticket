@@ -77,3 +77,8 @@ Route::get('/admin/payment/{paymentId}', [PaymentController::class, 'showPayment
 
 //new route for showing the payment detail
 Route::patch('/admin/payment/{paymentId}/update-status', [PaymentController::class, 'updatePaymentStatus'])->name('admin.payment.update-status');
+
+//Admin update status
+Route::patch('/admin/payment/{paymentId}/update-status', [PaymentController::class, 'updatePaymentStatus'])
+     ->name('admin.updatePaymentStatus');
+     

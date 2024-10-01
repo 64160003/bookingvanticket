@@ -55,16 +55,20 @@ class PaymentController extends Controller
 
     public function updatePaymentStatus(Request $request, $paymentId)
     {
-        $payment = PaymentModel::where('PaymentID', $paymentId)->first();
+        $payment = PaymentModel::findOrFail($paymentId);
 
-        if (!$payment) {
-            return redirect()->back()->with('error', 'Payment not found');
+        $newStatus = $request->input('status');
+        if ($newStatus != $payment->PaymentStatus) {
+            $payment->PaymentStatus = $newStatus;
+            $payment->save();
+
+            $statusText = $newStatus == 1 ? 'confirmed' : 'cancelled';
+            $message = "Payment status updated successfully. Payment is now {$statusText}.";
+        } else {
+            $message = "Payment status remains unchanged.";
         }
 
-        $payment->PaymentStatus = $request->input('status');
-        $payment->save();
-
         return redirect()->route('admin.confirmation', ['status' => $payment->PaymentStatus])
-            ->with('success', 'Payment status updated successfully');
+            ->with('success', $message);
     }
 }

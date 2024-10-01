@@ -87,7 +87,7 @@
         <button class="btn seat-btn" data-seats="3">3 Seats</button>
         <div class="custom-input">
             <label for="custom-seats">Custom quantity:</label>
-            <input type="number" id="custom-seats" min="1" max="10">
+            <input type="number" id="custom-seats" min="1" max="13">
             <button class="btn" id="custom-seats-btn">Select</button>
         </div>
     </div>

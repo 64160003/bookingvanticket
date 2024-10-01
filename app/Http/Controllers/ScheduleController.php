@@ -20,6 +20,12 @@ class ScheduleController extends Controller
         // Pass the schedules data to the view
         $currentDate = Carbon::now()->format('d F Y'); // Get current date in desired format
         return view('welcome', compact('schedules', 'currentDate'));
-    }    
+    }  
+    public function dashboard()
+    {
+        // Fetch any data you want to display on the dashboard
+        // For example, booking counts, recent schedules, etc.
+        return view('dashboard'); // Make sure you have a view named 'dashboard.blade.php'
+    }  
 
 }

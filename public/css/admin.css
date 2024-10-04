@@ -645,6 +645,102 @@ label[for=nav-footer-toggle] {
   overflow-x: auto;
 }
 
+/* Sort Options Styles */
+.sort-options {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  background-color: #4e73df;
+  border-color: #4e73df;
+  transition: all 0.3s ease;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.dropdown-toggle:hover {
+  background-color: #2e59d9;
+  border-color: #2e59d9;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  min-width: 160px;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 8px;
+  padding: 10px 0;
+  margin-top: 5px;
+  transition: all 0.3s ease;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 20px;
+  clear: both;
+  font-weight: 400;
+  color: #3a3b45;
+  text-align: inherit;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fc;
+  color: #4e73df;
+}
+
+.dropdown-item i {
+  margin-right: 10px;
+  color: #4e73df;
+}
+
+#datePicker {
+  border-radius: 25px;
+  border: 1px solid #d1d3e2;
+  padding: 10px 15px;
+  transition: all 0.3s ease;
+}
+
+#datePicker:focus {
+  border-color: #4e73df;
+  box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Animation for dropdown menu */
+@keyframes fadeInUp {
+  from {
+      opacity: 0;
+      transform: translate3d(0, 10px, 0);
+  }
+  to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+  }
+}
+
+.dropdown:hover .dropdown-menu {
+  animation: fadeInUp 0.3s ease;
+}
+
 @media (max-width: 576px) {
   .table-responsive table {
       font-size: 0.9rem;

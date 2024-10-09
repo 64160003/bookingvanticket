@@ -110,7 +110,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const originButtons = document.querySelectorAll('.origin-btn');
+    // const originButtons = document.querySelectorAll('.origin-btn');
+    const originButtons = document.querySelectorAll('.btn.origin-btn');
     const destinationSection = document.getElementById('destination-section');
     const destinationButtonsContainer = document.getElementById('destination-buttons');
     const seatSelection = document.getElementById('seat-selection');
@@ -137,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     return response.json();
                 })
                 .then(destinations => {
+                    console.log('Fetched destinations:', destinations); // Add this line
                     destinationButtonsContainer.innerHTML = '';
                     if (destinations.length === 0) {
                         destinationButtonsContainer.innerHTML = '<p>No destinations available for this origin.</p>';

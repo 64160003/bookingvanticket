@@ -4,10 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
     <!-- Include your CSS files here -->
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'>
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @yield('styles')
 </head>
 
@@ -31,7 +34,8 @@
                         <span><a href="{{ route('admin.confirmation', ['status' => 0]) }}">รอชำระเงิน</a></span>
                     </div>
                     <hr />
-                    <div class="nav-button"><i class="fas fa-heart"></i><span>จัดการร้าน</span></div>
+                    <div class="nav-button"><i class="fas fa-heart"></i><span><a
+                                href="{{ route('admin.manage') }}">จัดการร้าน</a></span></div>
                     <div class="nav-button"><i class="fas fa-chart-line"></i><span>รายงาน</span></div>
                     {{-- เพิ่มมา --}}
                     @if (Route::has('register'))
@@ -81,6 +85,11 @@
     </div>
 
     <!-- Include your JS files here -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')

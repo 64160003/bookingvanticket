@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ManageController;
+use App\Http\Controllers\RouteController;
+
 
 // Home Route
 Route::get('/', [ScheduleController::class, 'index'])->name('home');
@@ -81,4 +84,24 @@ Route::patch('/admin/payment/{paymentId}/update-status', [PaymentController::cla
 //Admin update status
 Route::patch('/admin/payment/{paymentId}/update-status', [PaymentController::class, 'updatePaymentStatus'])
      ->name('admin.updatePaymentStatus');
-     
+
+
+// Route for showing the manage page
+Route::get('/admin/manage', [ManageController::class, 'show'])->name('admin.manage');
+
+// New routes for managing routes
+Route::get('/admin/manage/route', [RouteController::class, 'index'])->name('admin.manageRoute');
+Route::get('/admin/manage/schedule', [ScheduleController::class, 'manageSchedule'])->name('admin.manageSchedule');
+
+// API routes for AJAX calls
+Route::get('/api/origins', [RouteController::class, 'getOrigins']);
+Route::get('/api/destinations', [RouteController::class, 'getDestinations']);
+Route::get('/api/origins/{id}', [RouteController::class, 'getOrigin']);
+Route::get('/api/origins/{id}/destinations', [RouteController::class, 'getOriginDestinations']);
+Route::post('/api/origins', [RouteController::class, 'storeOrigin']);
+Route::post('/api/destinations', [RouteController::class, 'storeDestination']);
+Route::put('/api/origins/{id}', [RouteController::class, 'updateOrigin']);
+Route::put('/api/destinations/{id}', [RouteController::class, 'updateDestination']);
+Route::delete('/api/origins/{id}', [RouteController::class, 'deleteOrigin']);
+Route::delete('/api/destinations/{id}', [RouteController::class, 'deleteDestination']);
+

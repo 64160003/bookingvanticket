@@ -127,19 +127,6 @@ public function getDestinations()
     }
 }
 
-    public function updateDestination(Request $request, $id)
-    {
-        $destination = RouteDown::findOrFail($id);
-        $validated = $request->validate([
-            'Destination' => 'required|string|max:255',
-            'Price' => 'required|numeric',
-            'Active' => 'required|boolean',
-        ]);
-
-        $destination->update($validated);
-        return response()->json($destination);
-    }
-
     public function deleteOrigin($id)
     {
         try {
@@ -155,6 +142,54 @@ public function getDestinations()
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function storeDestination(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'Destination' => 'required|string|max:255',
+                'Price' => 'required|numeric',
+                'Active' => 'required|boolean',
+            ]);
+
+            $destination = RouteDown::create($validated);
+
+            return response()->json($destination, 201);
+        } catch (\Exception $e) {
+            Log::error('Error storing destination: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while saving the destination. ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function updateDestination(Request $request, $id)
+    {
+        try {
+            $destination = RouteDown::findOrFail($id);
+            
+            $validated = $request->validate([
+                'Destination' => 'sometimes|required|string|max:255',
+                'Price' => 'sometimes|required|numeric',
+                'Active' => 'sometimes|required|boolean',
+            ]);
+
+            $destination->update($validated);
+            return response()->json($destination);
+        } catch (\Exception $e) {
+            Log::error('Error updating destination: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while updating the destination. ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteDestination($id)
+    {
+        try {
+            $destination = RouteDown::findOrFail($id);
+            $destination->delete();
+            return response()->json(['message' => 'Destination deleted successfully'], 200);
+        } catch (\Exception $e) {
+            Log::error('Error deleting destination: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while deleting the destination. ' . $e->getMessage()], 500);
         }
     }
 }

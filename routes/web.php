@@ -91,7 +91,7 @@ Route::get('/admin/manage', [ManageController::class, 'show'])->name('admin.mana
 
 // New routes for managing routes
 Route::get('/admin/manage/route', [RouteController::class, 'index'])->name('admin.manageRoute');
-Route::get('/admin/manage/schedule', [ScheduleController::class, 'manageSchedule'])->name('admin.manageSchedule');
+Route::get('/admin/manage-schedule', [ScheduleController::class, 'manageSchedule'])->name('admin.manageSchedule');
 
 // API routes for AJAX calls
 Route::get('/api/origins', [RouteController::class, 'getOrigins']);
@@ -105,3 +105,11 @@ Route::put('/api/destinations/{id}', [RouteController::class, 'updateDestination
 Route::delete('/api/origins/{id}', [RouteController::class, 'deleteOrigin']);
 Route::delete('/api/destinations/{id}', [RouteController::class, 'deleteDestination']);
 
+// Route group for admin schedules DELETE
+Route::prefix('admin')->group(function () {
+    Route::get('/schedules/{id}', [ScheduleController::class, 'show'])->name('admin.schedules.show');
+    Route::post('/schedules', [ScheduleController::class, 'store'])->name('admin.schedules.store');
+    Route::put('/schedules/{id}', [ScheduleController::class, 'update'])->name('admin.schedules.update');
+    Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->name('admin.schedules.destroy');
+    Route::post('/schedules/{id}/toggle-active', [ScheduleController::class, 'toggleActive'])->name('admin.schedules.toggleActive');
+});

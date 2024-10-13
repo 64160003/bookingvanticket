@@ -8,7 +8,10 @@
             <div class="col-md-10">
                 <div class="card">
                     <div class="card-header">
+                        <!-- Route Management -->
                         <a href="{{ route('admin.manageRoute') }}" class="btn btn-primary mr-2">Route</a>
+                        
+                        <!-- Schedule Management - Changed to 'admin.manageSchedule' -->
                         <a href="{{ route('admin.manageSchedule') }}" class="btn btn-primary">Schedule</a>
                     </div>
                     <div class="card-body">

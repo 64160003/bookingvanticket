@@ -2,18 +2,27 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DayType extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    use HasFactory;
+
+    protected $table = 'day_type';
+    protected $primaryKey = 'DayTypeID';
+    public $incrementing = true;
+    protected $keyType = 'int'; // Change this to 'int' if your database uses INT, or keep as 'bigint' if it uses BIGINT
+
+    public $timestamps = true;
+
     protected $fillable = [
-        'DaytypeName',
+        'DayTypeName',
+        'Active',
     ];
 
-    // Add relationships, if any, here
+    public function schedules()
+    {
+        return $this->belongsToMany(Schedule::class, 'schedule_has_day_type', 'DayTypeID', 'ScheduleID');
+    }
 }

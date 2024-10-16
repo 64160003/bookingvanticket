@@ -35,10 +35,12 @@
                                         <td>{{ $schedule->dayTypes->first()->DayTypeName ?? 'N/A' }}</td>
                                         <td>
                                             <div class="toggle-switch">
-                                                <input type="checkbox" id="scheduleStatus{{ $schedule->id }}"
+                                                <input type="checkbox" id="scheduleStatus{{ $schedule->ScheduleID }}"
                                                     class="toggle-switch-checkbox schedule-status-switch"
-                                                    data-id="{{ $schedule->id }}" {{ $schedule->Active ? 'checked' : '' }}>
-                                                <label class="toggle-switch-label" for="scheduleStatus{{ $schedule->id }}">
+                                                    data-id="{{ $schedule->ScheduleID }}"
+                                                    {{ $schedule->Active ? 'checked' : '' }}>
+                                                <label class="toggle-switch-label"
+                                                    for="scheduleStatus{{ $schedule->ScheduleID }}">
                                                     <span class="toggle-switch-inner"></span>
                                                     <span class="toggle-switch-switch"></span>
                                                 </label>
@@ -144,6 +146,7 @@
 
     @push('scripts')
         <script>
+            console.log('Initial schedules data:', @json($schedules));
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -157,19 +160,31 @@
                     var formData = new FormData(this);
                     var scheduleId = $('#scheduleId').val();
                     var url = scheduleId ? '/admin/schedules/' + scheduleId : '/admin/schedules';
-                    var method = scheduleId ? 'PUT' : 'POST';
+                    var method = scheduleId ? 'POST' : 'POST';
+
+                    if (scheduleId) {
+                        formData.append('_method', 'PUT');
+                    }
 
                     formData.append('active', $('#active').is(':checked') ? 1 : 0);
 
                     $.ajax({
                         url: url,
-                        method: method,
+                        method: 'POST',
                         data: formData,
                         processData: false,
                         contentType: false,
                         success: function(response) {
                             $('#scheduleModal').modal('hide');
-                            location.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Schedule has been saved successfully!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                location.reload();
+                            });
                         },
                         error: function(xhr) {
                             console.log(xhr.responseText);
@@ -182,23 +197,47 @@
                 // Edit Schedule
                 $('.edit-schedule').on('click', function() {
                     var scheduleId = $(this).data('id');
-                    $.get('/admin/schedules/' + scheduleId, function(data) {
-                        $('#scheduleId').val(data.id);
-                        $('#departureTime').val(data.DepartureTime);
-                        $('#dayTypeName').val(data.dayTypeName);
-                        $('#active').prop('checked', data.Active == 1);
+                    console.log('Edit button clicked for schedule ID:', scheduleId);
 
-                        $('input[name="daysOfWeek[]"]').prop('checked', false);
-                        data.days.forEach(function(day) {
-                            $('input[name="daysOfWeek[]"][value="' + day + '"]').prop('checked',
-                                true);
-                        });
+                    $.ajax({
+                        url: '/admin/schedules/' + scheduleId,
+                        method: 'GET',
+                        success: function(data) {
+                            console.log('Received data:', data);
+                            if (data.id === undefined || data.id === null) {
+                                console.error('Received null or undefined ID from server');
+                                alert('Error: Unable to edit schedule due to missing ID');
+                                return;
+                            }
+                            $('#scheduleId').val(data.id);
+                            $('#departureTime').val(data.DepartureTime);
+                            $('#dayTypeName').val(data.dayTypeName);
+                            $('#active').prop('checked', data.Active == 1);
+                            $('#routeId').val(data.RouteID);
+                            $('#startDateAt').val(data.StartDateAt);
+                            $('#endDateAt').val(data.EndDateAt);
 
-                        $('#scheduleModalLabel').text('Edit Schedule');
-                        $('#scheduleModal').modal('show');
-                    }).fail(function(xhr) {
-                        console.log(xhr.responseText);
-                        alert('Failed to load schedule data');
+                            $('input[name="daysOfWeek[]"]').prop('checked', false);
+                            data.days.forEach(function(day) {
+                                $('input[name="daysOfWeek[]"][value="' + day + '"]').prop(
+                                    'checked', true);
+                            });
+
+                            $('#scheduleModalLabel').text('Edit Schedule');
+                            $('#scheduleModal').modal('show');
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Failed to load schedule data:', error);
+                            console.error('Status:', status);
+                            console.error('Response:', xhr.responseText);
+                            try {
+                                var responseJson = JSON.parse(xhr.responseText);
+                                console.error('Parsed error message:', responseJson.message);
+                            } catch (e) {
+                                console.error('Could not parse error response');
+                            }
+                            alert('Failed to load schedule data. Check console for details.');
+                        }
                     });
                 });
 
@@ -211,46 +250,143 @@
                 // Delete Schedule
                 $('.delete-schedule').on('click', function() {
                     var scheduleId = $(this).data('id');
-                    if (confirm('Are you sure you want to delete this schedule?')) {
-                        $.ajax({
-                            url: '/admin/schedules/' + scheduleId,
-                            type: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function(response) {
-                                alert(response.message);
-                                location.reload();
-                            },
-                            error: function(xhr) {
-                                console.log(xhr.responseText);
-                                alert('An error occurred: ' + (xhr.responseJSON ? xhr.responseJSON
-                                    .message : xhr.statusText));
-                            }
-                        });
-                    }
-                });
-
-                // Toggle Active Status
-                $('.schedule-status-switch').on('change', function() {
-                    var scheduleId = $(this).data('id');
-                    $.ajax({
-                        url: '/admin/schedules/' + scheduleId + '/toggle-active',
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            alert('Status updated successfully');
-                        },
-                        error: function(xhr) {
-                            console.log(xhr.responseText);
-                            alert('An error occurred: ' + (xhr.responseJSON ? xhr.responseJSON
-                                .message : xhr.statusText));
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '/admin/schedules/' + scheduleId,
+                                type: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                success: function(response) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Deleted!',
+                                        text: 'Your schedule has been deleted.',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                },
+                                error: function(xhr) {
+                                    console.log(xhr.responseText);
+                                    alert('An error occurred: ' + (xhr.responseJSON ? xhr
+                                        .responseJSON.message : xhr.statusText));
+                                }
+                            });
                         }
                     });
                 });
+
+                // Toggle Active Status with switch button
+                document.querySelectorAll('.schedule-status-switch').forEach(function(checkbox) {
+                    checkbox.addEventListener('change', function(event) {
+                        const scheduleId = event.target.getAttribute('data-id');
+                        const isChecked = event.target.checked;
+
+                        fetch(`/admin/schedules/${scheduleId}/toggle-active`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector(
+                                        'meta[name="csrf-token"]').getAttribute('content')
+                                },
+                                body: JSON.stringify({
+                                    Active: isChecked
+                                })
+                            })
+                    });
+                });
+
+
             });
         </script>
+        <style>
+            .toggle-switch {
+                position: relative;
+                width: 60px;
+                user-select: none;
+            }
+
+            .toggle-switch-checkbox {
+                display: none;
+            }
+
+            .toggle-switch-label {
+                display: block;
+                overflow: hidden;
+                cursor: pointer;
+                border: 2px solid #999999;
+                border-radius: 20px;
+            }
+
+            .toggle-switch-inner {
+                display: block;
+                width: 200%;
+                margin-left: -100%;
+                transition: margin 0.3s ease-in 0s;
+            }
+
+            .toggle-switch-inner:before,
+            .toggle-switch-inner:after {
+                display: block;
+                float: left;
+                width: 50%;
+                height: 30px;
+                padding: 0;
+                line-height: 30px;
+                font-size: 14px;
+                color: white;
+                font-family: Trebuchet, Arial, sans-serif;
+                font-weight: bold;
+                box-sizing: border-box;
+            }
+
+            .toggle-switch-inner:before {
+                content: "ON";
+                padding-left: 10px;
+                background-color: #34A7C1;
+                color: #FFFFFF;
+            }
+
+            .toggle-switch-inner:after {
+                content: "OFF";
+                padding-right: 10px;
+                background-color: #EEEEEE;
+                color: #999999;
+                text-align: right;
+            }
+
+            .toggle-switch-switch {
+                display: block;
+                width: 18px;
+                margin: 6px;
+                background: #FFFFFF;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                right: 26px;
+                border: 2px solid #999999;
+                border-radius: 20px;
+                transition: all 0.3s ease-in 0s;
+            }
+
+            .toggle-switch-checkbox:checked+.toggle-switch-label .toggle-switch-inner {
+                margin-left: 0;
+            }
+
+            .toggle-switch-checkbox:checked+.toggle-switch-label .toggle-switch-switch {
+                right: 0px;
+            }
+        </style>
     @endpush
 @endsection

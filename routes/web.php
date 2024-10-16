@@ -105,11 +105,13 @@ Route::put('/api/destinations/{id}', [RouteController::class, 'updateDestination
 Route::delete('/api/origins/{id}', [RouteController::class, 'deleteOrigin']);
 Route::delete('/api/destinations/{id}', [RouteController::class, 'deleteDestination']);
 
-// Route group for admin schedules DELETE
 Route::prefix('admin')->group(function () {
     Route::get('/schedules/{id}', [ScheduleController::class, 'show'])->name('admin.schedules.show');
     Route::post('/schedules', [ScheduleController::class, 'store'])->name('admin.schedules.store');
     Route::put('/schedules/{id}', [ScheduleController::class, 'update'])->name('admin.schedules.update');
     Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->name('admin.schedules.destroy');
-    Route::post('/schedules/{id}/toggle-active', [ScheduleController::class, 'toggleActive'])->name('admin.schedules.toggleActive');
+    
+    // Route สำหรับ toggle-active ต้องเป็น POST และต้องใช้ ScheduleID แทน {schedule}
+    Route::post('/schedules/{ScheduleID}/toggle-active', [ScheduleController::class, 'toggleActive']);
 });
+

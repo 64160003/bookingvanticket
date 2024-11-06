@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary border">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">Logo</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -28,28 +28,16 @@
                         <a class="nav-link" href="{{ route('search') }}">ตรวจสอบการจอง</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('about') }}">ติดต่อเรา</a>
-                    </li>
-                    <li class="nav-item">
                         @if (Route::has('login'))
-                            @auth
-                                <a href="{{ url('/dashboard') }}"
-                                    class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white">
-                                    Dashboard
-                                </a>
-                            @else
-                                <a href="{{ route('login') }}"
-                                    class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white">
-                                    Log in
-                                </a>
-
-                                @if (Route::has('register'))
-                                    <a href="{{ route('register') }}"
-                                        class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white">
-                                        Register
-                                    </a>
-                                @endif
-                            @endauth
+                        @auth
+                        <a href="{{ url('/dashboard') }}" class="nav-link">
+                            Dashboard
+                        </a>
+                        @else
+                        <a href="{{ route('login') }}" class="nav-link">
+                            เข้าสู่ระบบ (พนักงาน)
+                        </a>
+                        @endauth
     </nav>
     @endif
     </li>
@@ -57,7 +45,7 @@
     </div>
     </div>
     </nav>
-    <div class="container py-2">
+    <div class="container-fluid pt-2 px-0">
         @yield('content')
     </div>
 </body>

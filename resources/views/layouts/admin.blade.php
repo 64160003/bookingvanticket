@@ -17,6 +17,7 @@
     <!-- jQuery and Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
     @yield('styles')
 </head>
 
@@ -28,13 +29,15 @@
             <div id="nav-bar">
                 <input id="nav-toggle" type="checkbox" />
                 <div id="nav-header">
-                    <a id="nav-title" href="https://codepen.io" target="_blank">C<i class="fab fa-codepen"></i>DEPEN</a>
+                    <a id="nav-title" href="/"></i>รถตู้บางแสน-จันทบุรี</a>
                     <label for="nav-toggle"><span id="nav-toggle-burger"></span></label>
                     <hr />
                 </div>
                 <div id="nav-content">
-                    <div class="nav-button"><i class="fas fa-palette"></i><span>จองตั๋ว</span></div>
-                    <div class="nav-button"><i class="fas fa-images"></i><span>ค้นหาการจอง</span></div>
+                    <div class="nav-button"><i class="fas fa-palette"></i><span><a
+                                href="{{ route('addminbooking') }}">จองตั๋ว</a></span></div>
+                    <div class="nav-button"><i class="fas fa-images"></i><span><a
+                                href="{{ route('adsearch') }}">ค้นหาการจอง</a></span></div>
                     <div class="nav-button">
                         <i class="fas fa-thumbtack"></i>
                         <span><a href="{{ route('admin.confirmation', ['status' => 0]) }}">รอชำระเงิน</a></span>
@@ -42,12 +45,16 @@
                     <hr />
                     <div class="nav-button"><i class="fas fa-heart"></i><span><a
                                 href="{{ route('admin.manage') }}">จัดการร้าน</a></span></div>
-                    <div class="nav-button"><i class="fas fa-chart-line"></i><span>รายงาน</span></div>
-                    {{-- เพิ่มมา --}}
-                    @if (Route::has('register'))
-                        <div class="nav-button"><i class="fas fa-fire"></i><span><a
-                                    href="{{ route('register') }}">สมัครแอดมิน</a></span></div>
-                    @endif
+
+
+                    <div class="nav-button"><i class="fas fa-heart"></i><span><a
+                                href="{{ route('report.totalSales') }}">รายงานยอดขาย</a></span></div>
+
+                    <div class="nav-button">
+                        <i class="fas fa-fire"></i>
+                        <span><a href="{{ route('admin.register') }}">สมัครแอดมิน</a></span>
+                    </div>
+
                     <div class="nav-button"><i class="fas fa-magic"></i><span><a
                                 href="{{ route('profile.edit') }}">แก้ไขโปรไฟล์</a></span></div>
                     <hr />
@@ -57,9 +64,7 @@
                             <form method="POST" action="{{ route('logout') }}" id="logout-form">
                                 @csrf
                                 <a href="#"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    ออกจากระบบ
-                                </a>
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">ออกจากระบบ</a>
                             </form>
                         </span>
                     </div>

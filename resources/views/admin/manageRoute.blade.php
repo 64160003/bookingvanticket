@@ -10,49 +10,49 @@
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="routeDropdown"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Route
+                                เส้นทาง
                             </button>
                             <div class="dropdown-menu" aria-labelledby="routeDropdown">
-                                <a class="dropdown-item" href="#" id="originBtn">Origin</a>
-                                <a class="dropdown-item" href="#" id="destinationBtn">Destination</a>
+                                <a class="dropdown-item" href="#" id="originBtn">จุดขึ้นรถ</a>
+                                <a class="dropdown-item" href="#" id="destinationBtn">จุดหมาย</a>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
                         <div id="originSection" style="display: none;">
-                            <h3>Origins</h3>
+                            <h3>จุดขึ้นรถ</h3>
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Origin</th>
-                                        <th>Active</th>
-                                        <th>Actions</th>
+                                        <th>ลำดับ</th>
+                                        <th>จุดขึ้นรถ</th>
+                                        <th>สถานะ</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody id="originTableBody">
                                     <!-- Origins will be populated here -->
                                 </tbody>
                             </table>
-                            <button class="btn btn-primary" id="addOriginBtn">Add Origin</button>
+                            <button class="btn btn-primary" id="addOriginBtn">เพิ่มจุดขึ้นรถ</button>
                         </div>
                         <div id="destinationSection" style="display: none;">
-                            <h3>Destinations</h3>
+                            <h3>จุดหมาย</h3>
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Destination</th>
-                                        <th>Price</th>
-                                        <th>Active</th>
-                                        <th>Actions</th>
+                                        <th>ลำดับ</th>
+                                        <th>จุดหมาย</th>
+                                        <th>ราคา</th>
+                                        <th>สถานะ</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody id="destinationTableBody">
                                     <!-- Destinations will be populated here -->
                                 </tbody>
                             </table>
-                            <button class="btn btn-primary" id="addDestinationBtn">Add Destination</button>
+                            <button class="btn btn-primary" id="addDestinationBtn">เพิ่มจุดหมาย</button>
                         </div>
                     </div>
                 </div>
@@ -191,8 +191,8 @@
                         </div>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-primary edit-origin" data-id="${origin.RouteID}">Edit</button>
-                        <button class="btn btn-sm btn-danger delete-origin" data-id="${origin.RouteID}">Delete</button>
+                        <button class="btn btn-sm btn-primary edit-origin" data-id="${origin.RouteID}">แก้ไข</button>
+                        <button class="btn btn-sm btn-danger delete-origin" data-id="${origin.RouteID}">ลบ</button>
                     </td>
                 </tr>
             `;
@@ -354,8 +354,8 @@
                         </div>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-primary edit-destination" data-id="${destination.idRouteDown}">Edit</button>
-                        <button class="btn btn-sm btn-danger delete-destination" data-id="${destination.idRouteDown}">Delete</button>
+                        <button class="btn btn-sm btn-primary edit-destination" data-id="${destination.idRouteDown}">แก้ไข</button>
+                        <button class="btn btn-sm btn-danger delete-destination" data-id="${destination.idRouteDown}">ลบ</button>
                     </td>
                 </tr>
             `;

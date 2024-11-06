@@ -27,4 +27,10 @@ class ScheduleHasDayType extends Model
     {
         return $this->belongsTo(DayType::class, 'DayTypeID');
     }
+
+    // กำหนดความสัมพันธ์กับ BookingModel
+    public function bookings()
+    {
+        return $this->hasMany(BookingModel::class, 'ScheduleID', 'id');
+    }
 }

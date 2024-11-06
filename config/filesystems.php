@@ -7,9 +7,8 @@ return [
     | Default Filesystem Disk
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the default filesystem disk that should be used
-    | by the framework. The "local" disk, as well as a variety of cloud
-    | based disks are available to your application for file storage.
+    | The default filesystem disk that should be used by the framework. 
+    | Make sure the default is set to 'local' unless you're using an external disk.
     |
     */
 
@@ -20,30 +19,30 @@ return [
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |
-    | Below you may configure as many filesystem disks as necessary, and you
-    | may even configure multiple disks for the same driver. Examples for
-    | most supported storage drivers are configured here for reference.
-    |
-    | Supported drivers: "local", "ftp", "sftp", "s3"
+    | Configure as many filesystem disks as necessary. 
+    | By default, local and public disks are set to their corresponding paths inside the container.
     |
     */
 
     'disks' => [
 
+        // Local disk (correct path for Docker)
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app'),
+            'root' => storage_path('app'),  // This should work correctly in Docker
             'throw' => false,
         ],
 
+        // Public disk (correct path for Docker)
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'root' => storage_path('app/public'),  // Inside Docker, this should point to /var/www/storage/app/public
+            'url' => env('APP_URL').'/storage',  // Ensure APP_URL in .env is correct (e.g., http://localhost:8081)
             'visibility' => 'public',
             'throw' => false,
         ],
 
+        // S3 configuration (if using S3, ensure .env variables are correctly set)
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -63,14 +62,13 @@ return [
     | Symbolic Links
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the symbolic links that will be created when the
-    | `storage:link` Artisan command is executed. The array keys should be
-    | the locations of the links and the values should be their targets.
+    | Map the public 'storage' folder to the 'storage/app/public' directory.
+    | This is necessary for serving files from the storage folder.
     |
     */
 
     'links' => [
-        public_path('storage') => storage_path('app/public'),
+        public_path('storage') => storage_path('app/public'),  // Docker should respect this mapping
     ],
 
 ];

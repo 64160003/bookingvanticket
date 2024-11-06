@@ -7,15 +7,15 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ManageController;
 use App\Http\Controllers\RouteController;
+use App\Http\Controllers\ReportController;
 
 
 // Home Route
 Route::get('/', [ScheduleController::class, 'index'])->name('home');
 
-// Route for the about page
-Route::get('about', function () {
-    return view('about');
-})->name('about');
+//Admin Booking
+Route::get('/adminbooking', [ScheduleController::class, 'addindex'])
+    ->name('addminbooking');
 
 // Route for the search page
 Route::get('/search', function () {
@@ -24,6 +24,8 @@ Route::get('/search', function () {
 
 // Route for searching bookings
 Route::get('/search-booking', [BookingController::class, 'search'])->name('search.booking');
+
+
 
 // Route for fetching destinations based on selected origin (routeUpID)
 Route::get('/fetch-destinations/{routeUpID}', [BookingController::class, 'fetchDestinations'])->name('booking.fetchDestinations');
@@ -67,31 +69,12 @@ Route::fallback(function () {
 });
 
 // Include authentication routes
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 // Booking confirmation route
 Route::get('/booking/confirmation/{id}', [BookingController::class, 'showConfirmation'])->name('booking.confirmation');
 
-// Route for showing the payment confirmation page
-Route::get('/admin/confirm/{status}', [PaymentController::class, 'showConfirmation'])->name('admin.confirmation');
 
-// Route for showing the payment detail
-Route::get('/admin/payment/{paymentId}', [PaymentController::class, 'showPaymentDetail'])->name('admin.payment.detail');
-
-//new route for showing the payment detail
-Route::patch('/admin/payment/{paymentId}/update-status', [PaymentController::class, 'updatePaymentStatus'])->name('admin.payment.update-status');
-
-//Admin update status
-Route::patch('/admin/payment/{paymentId}/update-status', [PaymentController::class, 'updatePaymentStatus'])
-     ->name('admin.updatePaymentStatus');
-
-
-// Route for showing the manage page
-Route::get('/admin/manage', [ManageController::class, 'show'])->name('admin.manage');
-
-// New routes for managing routes
-Route::get('/admin/manage/route', [RouteController::class, 'index'])->name('admin.manageRoute');
-Route::get('/admin/manage-schedule', [ScheduleController::class, 'manageSchedule'])->name('admin.manageSchedule');
 
 // API routes for AJAX calls
 Route::get('/api/origins', [RouteController::class, 'getOrigins']);
@@ -110,8 +93,43 @@ Route::prefix('admin')->group(function () {
     Route::post('/schedules', [ScheduleController::class, 'store'])->name('admin.schedules.store');
     Route::put('/schedules/{id}', [ScheduleController::class, 'update'])->name('admin.schedules.update');
     Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->name('admin.schedules.destroy');
-    
+
     // Route สำหรับ toggle-active ต้องเป็น POST และต้องใช้ ScheduleID แทน {schedule}
     Route::post('/schedules/{ScheduleID}/toggle-active', [ScheduleController::class, 'toggleActive']);
+
+    // Route for the search page Admin
+    Route::get('/admin-search', function () {
+        return view('admin.search');
+    })->name('adsearch');
+    // Route for searching bookings admin
+    Route::get('/search-booking-admin', [BookingController::class, 'adsearch'])->name('adminsearch');
+
+    // Route for showing the manage page
+    Route::get('/admin/manage', [ManageController::class, 'show'])->name('admin.manage');
+
+    //new route for showing the payment detail
+    Route::patch('/admin/payment/{paymentId}/update-status', [PaymentController::class, 'updatePaymentStatus'])->name('admin.payment.update-status');
+
+    // Route for showing the payment confirmation page
+    Route::get('/admin/confirm/{status}', [PaymentController::class, 'showConfirmation'])->name('admin.confirmation');
+
+    // Route for showing the payment detail
+    Route::get('/admin/payment/{paymentId}', [PaymentController::class, 'showPaymentDetail'])->name('admin.payment.detail');
+
+
+
+    //Admin update status
+    Route::patch('/admin/payment/{paymentId}/update-status', [PaymentController::class, 'updatePaymentStatus'])
+        ->name('admin.updatePaymentStatus');
+
+    // New routes for managing routes
+    Route::get('/admin/manage/route', [RouteController::class, 'index'])->name('admin.manageRoute');
+    Route::get('/admin/manage-schedule', [ScheduleController::class, 'manageSchedule'])->name('admin.manageSchedule');
 });
 
+//route สำหรับรายงานยอดขาย
+Route::prefix('admin')->group(function () {
+    Route::get('report/total-sales', [ReportController::class, 'totalSales'])->name('report.totalSales');
+    Route::get('report/daily-sales', [ReportController::class, 'dailySales'])->name('report.dailySales');
+    Route::get('report/monthly-sales-comparison', [ReportController::class, 'monthlySalesComparison'])->name('report.monthlySalesComparison');
+});

@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # PHP-FPM Service (Laravel app)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    networks:
+      - app-network
+    ports:
+      - "8000:8000" # Optional: Map Laravel development server to a port
+    environment:
+      - TZ=Asia/Bangkok # Set timezone
+
+  # Nginx Service (Webserver)
+  webserver:
+    image: nginx:alpine
+    container_name: laravel_webserver
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/snippets:/etc/nginx/snippets
+    ports:
+      - "8003:80" # Maps port 8003 on the host to port 80 in the container
+    networks:
+      - app-network
+
+  # MySQL Service (Database)
+  db:
+    image: mysql:5.7
+    container_name: laravel_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password # Set a root password for MySQL
+      MYSQL_DATABASE: bookvanticket
+      TZ: Asia/Bangkok # Set timezone
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  # phpMyAdmin Service
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root_password # Must match the password set for MySQL root
+    ports:
+      - "8082:80" # Access phpMyAdmin on localhost:8082
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:

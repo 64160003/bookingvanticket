@@ -9,13 +9,13 @@
                 <div class="card">
                     <div class="card-header">
                         <!-- Route Management -->
-                        <a href="{{ route('admin.manageRoute') }}" class="btn btn-primary mr-2">Route</a>
+                        <a href="{{ route('admin.manageRoute') }}" class="btn btn-primary mr-2">เส้นทาง</a>
                         
                         <!-- Schedule Management - Changed to 'admin.manageSchedule' -->
-                        <a href="{{ route('admin.manageSchedule') }}" class="btn btn-primary">Schedule</a>
+                        <a href="{{ route('admin.manageSchedule') }}" class="btn btn-primary">ตารางเวลา</a>
                     </div>
                     <div class="card-body">
-                        <h3>Route and Schedule Management</h3>
+                        <h3>การจัดการเส้นทาง และเวลา</h3>
                     </div>
                 </div>
             </div>

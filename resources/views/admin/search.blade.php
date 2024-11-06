@@ -1,18 +1,19 @@
-@extends('layouts/layout')
+@extends('layouts/admin')
 @section('title', 'ค้นหา')
 @section('content')
 
 <div class="container">
-    <h2 align="center"class="my-4">ค้นหาการจอง</h2>
+    <h2 align="center" class="my-4">ค้นหาการจอง</h2>
     <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-8">
-            <form action="{{ route('search.booking') }}" method="GET" class="card card-sm">
+            <form action="{{ route('adminsearch') }}" method="GET" class="card card-sm">
                 <div class="card-body row no-gutters align-items-center">
                     <div class="col-auto">
                         <i class="fas fa-search h4 text-body"></i>
                     </div>
                     <div class="col">
-                        <input class="form-control form-control-lg form-control-borderless" type="search" name="phone" placeholder="ค้นหาด้วยชื่อและเบอร์โทร" required>
+                        <input class="form-control form-control-lg form-control-borderless" type="search" name="phone"
+                            placeholder="ค้นหาด้วยชื่อและเบอร์โทร" required>
                     </div>
                     <div class="col-auto">
                         <button class="btn btn-lg btn-success" type="submit">ค้นหา</button>
@@ -35,7 +36,7 @@
                             {{ $booking->created_at->format('Y') + 543 }}
                     </p>
                     <p class="card-text"><strong>ชื่อผู้จอง:</strong> {{ $booking->Name }}</p>
-                    <p class="card-text"><strong>หมายเลขโทรศัพท์:</strong> {{ $booking->Phone }}</p>
+                    <p class="card-text"><strong>เบอร์โทรศัพท์:</strong> {{ $booking->Phone }}</p>
                     <p class="card-text"><strong>จำนวนที่นั่ง:</strong> {{ $booking->Seat }}</p>
                     @if ($booking->origin)
                     <p class="card-text"><strong>จุดขึ้นรถ:</strong> {{ $booking->origin->Origin }}</p>
@@ -63,7 +64,8 @@
                     </p>
                     <p class="card-text"><strong>ยอดรวม:</strong> ฿{{ number_format($payment->Amount, 2) }} บาท</p>
                     @else
-                    <p class="card-text"><strong>สถานะการจ่ายเงิน:</strong> <span class="text-danger">ไม่มีการชำระเงิน</span></p>
+                    <p class="card-text"><strong>สถานะการจ่ายเงิน:</strong> <span
+                            class="text-danger">ไม่มีการชำระเงิน</span></p>
                     @endif
                 </div>
             </div>
@@ -75,38 +77,41 @@
     @endif
 </div>
 
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+    integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
 
 <style>
-    body {
-        background: #ddd;
-    }
+body {
+    background: #ddd;
+}
 
-    .form-control-borderless {
-        border: none;
-    }
+.form-control-borderless {
+    border: none;
+}
 
-    .form-control-borderless:hover, .form-control-borderless:active, .form-control-borderless:focus {
-        border: none;
-        outline: none;
-        box-shadow: none;
-    }
+.form-control-borderless:hover,
+.form-control-borderless:active,
+.form-control-borderless:focus {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
 
-    .card {
-        transition: transform 0.2s;
-    }
+.card {
+    transition: transform 0.2s;
+}
 
-    .card:hover {
-        transform: translateY(-5px);
-    }
+.card:hover {
+    transform: translateY(-5px);
+}
 
-    .form-inline .form-group {
-        flex: 1;
-    }
+.form-inline .form-group {
+    flex: 1;
+}
 
-    .form-inline .form-control {
-        width: 100%;
-    }
+.form-inline .form-control {
+    width: 100%;
+}
 </style>
 
 @endsection
